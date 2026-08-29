@@ -1,11 +1,11 @@
 import express from 'express'
 import productRouter from './modules/Products/product.controller.js'
-
+import supRouter from './modules/Suppliers/suppliers.controller.js'
 const app = express()
 app.use(express.json())
 
 app.use("/product", productRouter)
-
+app.use("/suppliers", supRouter)
 
 
 
