@@ -67,7 +67,7 @@ router.get("/get-product-by-id/:id", (req, res) => {
             message: "id is require "
         })
     } else if (isNaN(id)) {
-        res.status(404).json({
+        return res.status(404).json({
             message: "invalid id ",
             rule: "id must be number "
         })
@@ -145,7 +145,9 @@ router.delete("/delete-product/:id", (req, res) => {
         }
     })
 })
-
+router.post("/create-category", (req, res) => {
+    connection.query(`    alter table product add category if not exists `)
+})
 router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"

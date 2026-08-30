@@ -101,26 +101,6 @@ router.patch("/supplier/id/:id", (req, res) => {
         }
     })
 })
-// delete product data 
-router.delete("/delete-supplier/:id", (req, res) => {
-    let { id } = req.params
-    if (!id) {
-        return res.status(404).json({
-            message: "id is require "
-        })
-    } else if (isNaN(id)) {
-        return res.status(404).json({
-            message: "invalid id ",
-            rule: "id must be number "
-        })
-    }
-    // delete code 
-
-
-
-
-})
-
 router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"
