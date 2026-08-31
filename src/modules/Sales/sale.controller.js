@@ -45,10 +45,14 @@ router.get("/all", (req, res) => {
     connection.execute(` select * from sales `, (error, result) => {
         if (error) {
             console.log(error);
-        } else {
+        } else if (result.length > 0) {
             res.status(200).json({
                 message: "success operation",
                 products: result
+            })
+        } else {
+            res.status(404).json({
+                message: "no product founded"
             })
         }
     })
@@ -82,7 +86,7 @@ router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"
     })
-})
+}) 
 
 export default router
 

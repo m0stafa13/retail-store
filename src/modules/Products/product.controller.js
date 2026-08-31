@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { connection } from "../../database/database.js";
-
 const router = Router()
 // get all product 
 router.get("/get-all-product", (req, res) => {
@@ -93,7 +92,7 @@ router.patch("/update/id/:id", (req, res) => {
     connection.execute(` select proName , price ,stockQuantity from product where productId  = ? `, [id], (error, ressul) => {
         if (error) {
             console.log(error);
-        } else {
+        } else if (ressul.length > 0) {
             let { proName, price, stockQuantity } = ressul[0]
             connection.execute(` update product set    proName ="${name ? name : proName}" , price ="${pPrice ? pPrice : price}" , stockQuantity  ="${pStockQuantity ? pStockQuantity : stockQuantity}"  where productId=${id}  `, (err, result) => {
                 if (err) {
@@ -108,6 +107,10 @@ router.patch("/update/id/:id", (req, res) => {
                         message: "product not found "
                     })
                 }
+            })
+        } else {
+            res.json({
+                message: "product not found "
             })
         }
     })
@@ -148,7 +151,7 @@ router.delete("/delete-product/:id", (req, res) => {
 })
 router.post("/create-category", (req, res) => {
     connection.query(`    alter table product add category if not exists `)
-})
+}) 
 router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"
