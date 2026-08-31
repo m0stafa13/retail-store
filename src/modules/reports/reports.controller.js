@@ -92,6 +92,11 @@ router.get("/get-all-sales", (req, res) => {
         }
     })
 })
+router.use("", (req, res) => {
+    res.status(404).json({
+        message: "server not found "
+    })
+})
 export default router
 
 

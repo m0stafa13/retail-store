@@ -2,8 +2,6 @@ import { Router } from "express";
 import { connection } from "../../database/database.js";
 
 const router = Router()
-
-
 // add new sale operation
 router.post("/add-sale", (req, res) => {
     let { proId, quantitySold } = req.body
@@ -42,7 +40,6 @@ router.post("/add-sale", (req, res) => {
 
 
 })
-
 // get all sale operation 
 router.get("/all", (req, res) => {
     connection.execute(` select * from sales `, (error, result) => {
@@ -81,7 +78,6 @@ router.get("/sale-product/:id", (req, res) => {
         }
     })
 })
-
 router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"

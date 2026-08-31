@@ -9,8 +9,6 @@ let addSale = ` insert into sales (proId , quantitySold )values (? , ?) `
 // 
 let updateProduct = ` update product set    proName ='?' , price =? , stockQuantity  =?  where productId=?  `
 
-
-
 // add new supplier 
 router.post("/add-supplier", (req, res) => {
     let { supPhone, supName } = req.body
@@ -184,67 +182,10 @@ router.delete("/delete-product/:id", (req, res) => {
         }
     })
 })
-
-
-
-
-
-
-
-
-// get all product 
-router.get("/get-all-product", (req, res) => {
-    connection.execute(` select * from product `, (error, result) => {
-        if (error) {
-            console.log(error);
-        } else {
-            res.status(200).json({
-                message: "success operation ",
-                products: result
-            })
-        }
-    })
-})
-
-// get product by id 
-router.get("/get-product-by-id/:id", (req, res) => {
-    let { id } = req.params
-    if (!id) {
-        res.status(404).json({
-            message: "id is require "
-        })
-    } else if (isNaN(id)) {
-        return res.status(404).json({
-            message: "invalid id ",
-            rule: "id must be number "
-        })
-    } else {
-        connection.execute(` select * from product where productId = ? `, [id], (error, result) => {
-            if (error) {
-                console.log(error);
-            }
-            else if (result.length > 0) {
-                res.status(200).json({
-                    message: "product data founded ",
-                    product: result
-                })
-            } else {
-                res.json({
-                    message: "no product founded"
-                })
-            }
-        })
-    }
-})
-
-router.post("/create-category", (req, res) => {
-    connection.query(`    alter table product add category if not exists `)
-})
 router.use("/*path", (req, res) => {
     res.status(404).json({
         message: "path not fund"
     })
 })
-
 export default router
 
