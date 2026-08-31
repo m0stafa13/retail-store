@@ -7,8 +7,6 @@ const router = Router()
 // add new sale operation
 router.post("/add-sale", (req, res) => {
     let { proId, quantitySold } = req.body
-    console.log(quantitySold);
-
     if (!proId || !quantitySold) {
         return res.json({
             message: "all data require put it and try again "
@@ -67,7 +65,7 @@ router.get("/sale-product/:id", (req, res) => {
             rule: "id must be number "
         })
     }
-    connection.execute(`select quantitySold   , saleDate ,product.proName  , product.price from sales JOIN product on sales.proId= ? `,[id], (err, result) => {
+    connection.execute(`select quantitySold   , saleDate ,product.proName  , product.price from sales JOIN product on sales.proId= ? `, [id], (err, result) => {
         if (err) {
             console.log(err);
         }

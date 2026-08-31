@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { connection } from "../../database/database.js";
 const router = Router()
-let sqlGetAllCol = "SHOW COLUMNS FROM product"
-let sql = "ALTER TABLE product DROP category"
-let changeDataType = "alter table suppliers MODIFY column supPhone varchar(?)"
+let sqlGetAllCol = `SHOW COLUMNS FROM product`
+let sql = `ALTER TABLE product DROP category`
+let createCol = `alter table product add COLUMN category varchar(255)`
+let changeDataType = `alter table suppliers MODIFY column supPhone varchar(?)`
 // add category column 
 router.post("/add-category-col", (req, res) => {
     connection.query(sqlGetAllCol, (err, result) => {
@@ -14,7 +15,7 @@ router.post("/add-category-col", (req, res) => {
             return col.Field == "category"
         })
         if (!checkColl) {
-            connection.query(sql, (error, creation) => {
+            connection.query(createCol, (error, creation) => {
                 if (error) {
                     console.log(error);
                 } else {
@@ -58,8 +59,17 @@ router.delete("/delete-category-col", (req, res) => {
 })
 //change data type for sup phone number 
 router.post("/change-type-col", (req, res) => {
-    let colNum = req.body
-    connection.query(`alter table suppliers MODIFY column supPhone varchar(3)`, (err, result) => {
+    let { colNum } = req.body
+    if (isNaN(colNum)) {
+        return res.json({
+            message: "the data must be number"
+        })
+    } else if (colNum.length == 0) {
+        return res.json({
+            message: "data is req"
+        })
+    }
+    connection.query(changeDataType, [colNum], (err, result) => {
         if (err) {
             console.log(err);
         } else {

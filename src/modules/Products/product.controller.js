@@ -23,39 +23,26 @@ router.post("/add-product", async (req, res) => {
             message: "all data require put it and try again "
         })
     }
-    connection.query(` SELECT * FROM product ;  SELECT * FROM suppliers`, (error, data) => {
+    connection.query(` SELECT supplierId FROM suppliers where supplierId =?`, [supplierId], (error, data) => {
         if (error) {
             console.log(error);
-        } else {
-            let [products, sups] = data
-            let checkData = products.find((pro) => {
-                return pro.proName == proName
-            })
-            let checkSup = sups.find((supplier) => {
-                return supplier.supplierId == supplierId
-            })
-            if (!checkSup) {
-                return res.status(404).json({
-                    message: "this supplier is not found "
-                })
-            }
-            else if (checkData) {
-                return res.json({
-                    message: "this product already exists try another one  "
-                })
-            } else {
-                connection.execute(` insert into product ( proName  , price , stockQuantity , supplierId ) values ( "${proName}","${price} ","${stockQuantity} ","${supplierId}"  ) `, (err, result) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        if (result.affectedRows > 0) {
-                            return res.status(201).json({
-                                message: "product added successfully "
-                            })
-                        }
+        }
+        if (data.length > 0) {
+            connection.execute(` insert into product ( proName  , price , stockQuantity , supplierId ) values ( ?,?,?,?  ) `, [proName, price, stockQuantity, supplierId], (err, result) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    if (result.affectedRows > 0) {
+                        return res.status(201).json({
+                            message: "product added successfully "
+                        })
                     }
-                })
-            }
+                }
+            })
+        } else {
+            res.json({
+                message: "this supplier is not found"
+            })
         }
     })
 })
@@ -72,14 +59,18 @@ router.get("/get-product-by-id/:id", (req, res) => {
             rule: "id must be number "
         })
     } else {
-        connection.execute(` select * from product where productId = ${id} `, (error, result) => {
+        connection.execute(` select * from product where productId = ? `, [id], (error, result) => {
             if (error) {
                 console.log(error);
             }
-            else {
+            else if (result.length > 0) {
                 res.status(200).json({
                     message: "product data founded ",
                     product: result
+                })
+            } else {
+                res.json({
+                    message: "no product founded"
                 })
             }
         })
@@ -88,7 +79,7 @@ router.get("/get-product-by-id/:id", (req, res) => {
 // update product data 
 router.patch("/update/id/:id", (req, res) => {
     let { id } = req.params
-    let { proName, price, stockQuantity } = req.body
+    let { name, pPrice, pStockQuantity } = req.body
     if (!id) {
         return res.status(404).json({
             message: "id is require "
@@ -99,20 +90,30 @@ router.patch("/update/id/:id", (req, res) => {
             rule: "id must be number "
         })
     }
-    connection.execute(` update product set    proName ="${proName}" , price ="${price}" , stockQuantity  ="${stockQuantity}"  where productId=${id}  `, (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        else if (result.affectedRows > 0) {
-            res.status(200).json({
-                message: "data updated successfully "
-            })
+    connection.execute(` select proName , price ,stockQuantity from product where productId  = ? `, [id], (error, ressul) => {
+        if (error) {
+            console.log(error);
         } else {
-            res.json({
-                message: "product not found "
+            let { proName, price, stockQuantity } = ressul[0]
+            connection.execute(` update product set    proName ="${name ? name : proName}" , price ="${pPrice ? pPrice : price}" , stockQuantity  ="${pStockQuantity ? pStockQuantity : stockQuantity}"  where productId=${id}  `, (err, result) => {
+                if (err) {
+                    console.log(err);
+                }
+                else if (result.affectedRows > 0) {
+                    res.status(200).json({
+                        message: "data updated successfully "
+                    })
+                } else {
+                    res.json({
+                        message: "product not found "
+                    })
+                }
             })
         }
     })
+
+
+
 
 })
 // delete product data 
